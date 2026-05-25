@@ -1,0 +1,11 @@
+# Compiled Java classes
+bin/
+*.class
+
+# Local file database logs (User accounts and booking logs)
+users.txt
+bookings.txt
+
+# Local server task logs
+*.log
+.system_generated/

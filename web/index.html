@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VegaRide - Bike Rentals, Mechanics & Support Anywhere in India</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 1. ZOOM-IN & FADE-OUT SPLASH SCREEN -->
+    <div id="splash-screen" class="splash-overlay">
+        <div class="splash-content">
+            <div class="splash-logo">VR</div>
+            <div class="splash-text">VegaRide</div>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER (Initially hidden until splash finishes) -->
+    <div id="app-container" class="app-hidden">
+
+        <!-- 2. LOGIN AND REGISTRATION SCREEN -->
+        <div id="auth-page" class="auth-section">
+            <div class="auth-grid">
+                
+                <!-- Left: Beautiful Sliding Carousel -->
+                <div class="auth-carousel">
+                    <div class="carousel-slide active" style="background-image: url('images/slide1.png');"></div>
+                    <div class="carousel-slide" style="background-image: url('images/slide2.png');"></div>
+                    <div class="carousel-slide" style="background-image: url('images/slide3.png');"></div>
+                    
+                    <div class="carousel-overlay">
+                        <div class="carousel-caption">
+                            <h2>Ride Your Dream Bike</h2>
+                            <p>Premium bike rentals and instant roadside assistance anywhere in India.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Glassmorphism login/register card -->
+                <div class="auth-form-container">
+                    <div class="auth-brand">
+                        <span class="logo-badge">VR</span>
+                        <span class="brand-name">VegaRide</span>
+                    </div>
+
+                    <!-- Login Card -->
+                    <div id="login-card" class="auth-card active">
+                        <h3>Welcome Back</h3>
+                        <p class="auth-subtitle">Log in to manage your bike rentals and road assistance.</p>
+                        
+                        <div class="notification error" id="login-error"></div>
+                        <div class="notification success" id="login-success"></div>
+
+                        <form id="login-form">
+                            <div class="form-group">
+                                <label for="login-email">Email Address</label>
+                                <input type="email" id="login-email" required placeholder="Enter your email">
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" required placeholder="Enter your password">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                        </form>
+                        <p class="switch-form-text">Don't have an account? <span class="link-btn" onclick="toggleAuthCard('register')">Register Now</span></p>
+                    </div>
+
+                    <!-- Register Card -->
+                    <div id="register-card" class="auth-card">
+                        <h3>Create Account</h3>
+                        <p class="auth-subtitle">Join us to book rentals and mechanics instantly across India.</p>
+                        
+                        <div class="notification error" id="register-error"></div>
+                        <div class="notification success" id="register-success"></div>
+
+                        <form id="register-form">
+                            <div class="form-group">
+                                <label for="reg-name">Full Name</label>
+                                <input type="text" id="reg-name" required placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-phone">Phone Number</label>
+                                <input type="tel" id="reg-phone" required placeholder="Enter your 10-digit mobile number">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-email">Email Address</label>
+                                <input type="email" id="reg-email" required placeholder="Enter your email address">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-password">Password</label>
+                                <input type="password" id="reg-password" required placeholder="Create a strong password">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                        </form>
+                        <p class="switch-form-text">Already registered? <span class="link-btn" onclick="toggleAuthCard('login')">Log In</span></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. MAIN DASHBOARD / LANDING PAGE -->
+        <div id="landing-page" class="landing-section hidden">
+            
+            <!-- Dynamic Navigation Bar -->
+            <header class="main-header">
+                <div class="header-container">
+                    <div class="brand">
+                        <span class="logo-badge-sm">VR</span>
+                        <span class="brand-title">VegaRide</span>
+                    </div>
+
+                    <!-- Location Bar -->
+                    <div class="location-detector-bar">
+                        <div class="loc-icon">📍</div>
+                        <div class="loc-details">
+                            <span class="loc-label">Your Location:</span>
+                            <span class="loc-current" id="selected-location-text">Detecting...</span>
+                        </div>
+                        <button class="btn btn-secondary-sm" id="btn-detect-location">Auto Detect</button>
+                        
+                        <!-- Manual Selector Dropdown -->
+                        <div class="manual-loc-select">
+                            <select id="state-select" onchange="handleStateChange()">
+                                <option value="">Select State</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Goa">Goa</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                            </select>
+                            <input type="text" id="city-manual-input" placeholder="Locality, area or city (e.g. Indiranagar, Koramangala)" onkeypress="handleCitySearch(event)">
+                            <button class="btn btn-primary-sm" onclick="applyManualLocation()">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Avatar & Sign Out -->
+                    <div class="user-menu">
+                        <div class="user-avatar" id="avatar-letters">U</div>
+                        <div class="user-info-dropdown">
+                            <p class="user-dropdown-name" id="user-display-name">Username</p>
+                            <p class="user-dropdown-email" id="user-display-email">user@email.com</p>
+                            <hr>
+                            <button class="btn btn-secondary-sm btn-block" onclick="signOut()">Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <main class="dashboard-content">
+                
+                <!-- Left Column: User Vehicle and Quick Emergency Assist -->
+                <div class="dashboard-sidebar">
+                    
+                    <!-- Profile Card -->
+                    <div class="glass-panel profile-card">
+                        <h3>Your Profile</h3>
+                        <div class="profile-info">
+                            <div class="info-row">
+                                <span class="info-label">Name:</span>
+                                <span class="info-value" id="profile-name">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Mobile:</span>
+                                <span class="info-value" id="profile-phone">-</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Vehicle Segment -->
+                        <div class="vehicle-segment">
+                            <h4>My Motorcycle / Scooter</h4>
+                            <p class="vehicle-desc">Keep your vehicle info saved so mechanics know what parts to bring during emergencies.</p>
+                            <div class="vehicle-display" id="vehicle-status-box">
+                                <span id="current-vehicle-text">None Registered</span>
+                                <button class="btn btn-link-sm" onclick="showVehicleForm()">Edit</button>
+                            </div>
+                            <div class="vehicle-edit-form hidden" id="vehicle-form-box">
+                                <input type="text" id="input-vehicle-model" placeholder="e.g. Royal Enfield Bullet 350">
+                                <div class="form-actions-row">
+                                    <button class="btn btn-primary-sm" onclick="saveVehicleProfile()">Save</button>
+                                    <button class="btn btn-secondary-sm" onclick="hideVehicleForm()">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EMERGENCY & ROAD ASSISTANCE: NEED HELP BUTTON -->
+                    <div class="glass-panel help-panel">
+                        <div class="help-header">
+                            <div class="pulse-ring"></div>
+                            <h3>Need Roadside Help?</h3>
+                        </div>
+                        <p class="help-desc">Stuck on the road? Got a flat tyre, engine issue, or empty tank? Request immediate assistance now!</p>
+                        
+                        <button class="btn btn-danger btn-block" id="btn-emergency-trigger" onclick="toggleHelpCenter()">
+                            🚨 Request Roadside Assistance
+                        </button>
+
+                        <!-- Expandable Help Center Form -->
+                        <div class="help-center-box hidden" id="help-center-box">
+                            <h4>What is the issue?</h4>
+                            <div class="issue-options-grid">
+                                <button class="btn btn-outline-issue" onclick="selectIssue('Flat Tyre', 250)">Flat Tyre</button>
+                                <button class="btn btn-outline-issue" onclick="selectIssue('Engine Breakdown', 450)">Engine Failure</button>
+                                <button class="btn btn-outline-issue" onclick="selectIssue('Empty Fuel Tank', 300)">Out of Fuel</button>
+                                <button class="btn btn-outline-issue" onclick="selectIssue('Brake & Chain Fix', 200)">Chain/Brake Issue</button>
+                            </div>
+                            
+                            <div class="form-group mt-3">
+                                <label for="custom-issue-desc">Or describe the problem:</label>
+                                <textarea id="custom-issue-desc" rows="2" placeholder="e.g. key broke, engine making noise..."></textarea>
+                            </div>
+
+                            <button class="btn btn-danger btn-block" onclick="submitEmergencyRequest()">Find Nearest Mechanic</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Rentals & History Tabs -->
+                <div class="dashboard-main">
+                    
+                    <!-- Tabs Selection Bar -->
+                    <div class="tabs-nav">
+                        <button class="tab-btn active" id="tab-btn-rent" onclick="switchDashboardTab('rent')">🛵 Rent a Bike</button>
+                        <button class="tab-btn" id="tab-btn-mechanic" onclick="switchDashboardTab('mechanic')">🔧 Standard Mechanic</button>
+                        <button class="tab-btn" id="tab-btn-history" onclick="switchDashboardTab('history')">📜 Booking & Help Logs</button>
+                    </div>
+
+                    <!-- Active Tab Panel: BIKE RENTALS -->
+                    <div class="tab-content active" id="panel-rent">
+                        <div class="tab-header-box">
+                            <div>
+                                <h3>Rent a Two-Wheeler</h3>
+                                <p>Discover registered rental suppliers near your location.</p>
+                            </div>
+                            <!-- Date Selector for Prebooking -->
+                            <div class="prebook-box">
+                                <label for="rental-date">Select Rental Date:</label>
+                                <input type="date" id="rental-date" class="form-input-sm">
+                            </div>
+                        </div>
+
+                        <!-- Vendor Grid -->
+                        <div class="vendors-container" id="rentals-list">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Active Tab Panel: STANDARD MECHANICS -->
+                    <div class="tab-content" id="panel-mechanic">
+                        <div class="tab-header-box">
+                            <div>
+                                <h3>Scheduled Bike Servicing</h3>
+                                <p>Pre-book standard bike servicing, oil replacements, and general tuning from top garages.</p>
+                            </div>
+                            <div class="prebook-box">
+                                <label for="service-date">Service Date:</label>
+                                <input type="date" id="service-date" class="form-input-sm">
+                            </div>
+                        </div>
+
+                        <!-- Vendor Grid -->
+                        <div class="vendors-container" id="mechanics-list">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Active Tab Panel: BOOKING AND ASSISTANCE LOGS -->
+                    <div class="tab-content" id="panel-history">
+                        <h3>Your Trip & Assistance History</h3>
+                        <p class="history-desc">All your bike rentals, standard garages, and roadside help logs are registered below.</p>
+                        
+                        <div class="history-timeline" id="history-list">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- OLA/UBER INSPIRED EXTRA RICH CONTENT CONTENT (Safety Banners & Fleet Categories) -->
+                    
+                    <!-- Fleet Categories Showcase -->
+                    <section class="extra-content-section mt-5">
+                        <div class="section-title-wrapper">
+                            <h3>Popular Categories We Provide</h3>
+                            <p class="section-subtitle">Specially curated two-wheelers for every Indian road scenario.</p>
+                        </div>
+                        
+                        <div class="categories-grid">
+                            
+                            <!-- Category 1: Eco-Electric -->
+                            <div class="category-card">
+                                <div class="cat-image-mock">⚡</div>
+                                <h4>VR Eco-Electric</h4>
+                                <p class="cat-desc">Compact electric mopeds. Perfect for tight traffic and zero emissions.</p>
+                                <div class="cat-footer">
+                                    <span class="cat-pricing">Starts ₹15/hr</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Category 2: Mini Commuters -->
+                            <div class="category-card">
+                                <div class="cat-image-mock">🛵</div>
+                                <h4>VR Mini Commuter</h4>
+                                <p class="cat-desc">Gearless gear like Activa or Access. Extremely easy to ride and highly economical.</p>
+                                <div class="cat-footer">
+                                    <span class="cat-pricing">Starts ₹20/hr</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Category 3: Classic Cruisers -->
+                            <div class="category-card">
+                                <div class="cat-image-mock">🏍️</div>
+                                <h4>VR Royal Cruiser</h4>
+                                <p class="cat-desc">Iconic thumping cruisers like Royal Enfield. Built for stability and touring comfort.</p>
+                                <div class="cat-footer">
+                                    <span class="cat-pricing">Starts ₹40/hr</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Category 4: Performance Sports -->
+                            <div class="category-card">
+                                <div class="cat-image-mock">🔥</div>
+                                <h4>VR High-Octane Sport</h4>
+                                <p class="cat-desc">Aggressive, fast sports bikes like KTM and Yamaha. Perfect for national highways.</p>
+                                <div class="cat-footer">
+                                    <span class="cat-pricing">Starts ₹60/hr</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                    <!-- Safety & Trust Guarantee Ola/Uber Inspired Banner -->
+                    <section class="trust-banner mt-5">
+                        <div class="trust-grid">
+                            <div class="trust-content">
+                                <h3>Your Road Safety is Our Priority</h3>
+                                <p>Inspired by global ride-sharing standards, VegaRide builds layers of security for your two-wheeler travels.</p>
+                                
+                                <div class="trust-features-list">
+                                    <div class="trust-item">
+                                        <span class="trust-icon">🛡️</span>
+                                        <div>
+                                            <strong>24/7 Breakdown Shield</strong>
+                                            <p>Our rapid emergency dispatch ensures a qualified mechanic reaches you in 20 minutes.</p>
+                                        </div>
+                                    </div>
+                                    <div class="trust-item">
+                                        <span class="trust-icon">⛑️</span>
+                                        <div>
+                                            <strong>Sanitized Safety Helmets</strong>
+                                            <p>All rental collections include an ISI-certified helmet, fully sanitized before unlock.</p>
+                                        </div>
+                                    </div>
+                                    <div class="trust-item">
+                                        <span class="trust-icon">💰</span>
+                                        <div>
+                                            <strong>Transparent Estimation</strong>
+                                            <p>Pay exactly what is listed on your booking ticket. Zero surprise fees, zero surcharges.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="trust-illustration">
+                                <div class="ill-circle">
+                                    <div class="ill-logo-vr">VR</div>
+                                    <span class="shield-badge">Verified Safe</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- How VegaRide Works Step-by-Step Panel -->
+                    <section class="how-it-works mt-5">
+                        <div class="section-title-wrapper text-center">
+                            <h3>How VegaRide Works</h3>
+                            <p class="section-subtitle">Get rolling on two wheels in four straightforward steps.</p>
+                        </div>
+                        
+                        <div class="steps-container">
+                            <div class="step-card">
+                                <div class="step-number">1</div>
+                                <h5>Set Your Locality</h5>
+                                <p>Detect your GPS coordinates or select a neighborhood (like Koramangala or Bandra).</p>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">2</div>
+                                <h5>Pick Your Choice</h5>
+                                <p>Search active scooter rentals, planned garage servicing, or emergency mechanics.</p>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">3</div>
+                                <h5>Reserve & Pre-book</h5>
+                                <p>Schedule instantly or pre-book for a holiday. Confirm your transaction in one tap.</p>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">4</div>
+                                <h5>Unlock & Ride</h5>
+                                <p>Present your booking confirmation at the verified supplier location and head out!</p>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+            </main>
+        </div>
+
+        <!-- 4. CUSTOM CONFIRMATION SUCCESS DIALOG -->
+        <div class="modal-overlay hidden" id="success-modal">
+            <div class="modal-card">
+                <div class="success-icon">✓</div>
+                <h3 id="modal-title">Booking Confirmed!</h3>
+                <p id="modal-message">Your request has been securely processed.</p>
+                
+                <div class="modal-details-box" id="modal-details">
+                    <!-- Dynamic billing and ticket info -->
+                </div>
+
+                <div class="modal-alert-note">
+                    <strong>Please Note:</strong> A provider representative will contact you on your registered mobile number shortly.
+                </div>
+                
+                <button class="btn btn-primary" onclick="closeSuccessModal()">Return to Dashboard</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Script Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
